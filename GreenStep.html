@@ -1,0 +1,1303 @@
+ 
+<!DOCTYPE html>
+ 
+<html lang="fa" dir="rtl">
+ 
+<head>
+ 
+<meta charset="UTF-8">
+ 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
+<title>گام سبز — خودارزیابی پایداری</title>
+ 
+<style>
+ 
+  :root{
+ 
+    --primary:#5A7D4F; --primary-dark:#3E5A36; --secondary:#3A8C8C;
+ 
+    --accent:#C9A66B; --bg:#FAF6EF; --surface:#ffffff;
+ 
+    --text:#2E2E2E; --text2:#6B6B6B; --success:#4CAF50;
+ 
+    --warning:#E8A33D; --error:#C0504D; --locked:#BDBDBD;
+ 
+    --radius:20px; --shadow:0 4px 16px rgba(0,0,0,.08);
+ 
+  }
+ 
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+ 
+  html,body{margin:0;padding:0;height:100%;}
+ 
+  body{
+ 
+    font-family: Tahoma, "Segoe UI", Arial, sans-serif;
+ 
+    background: linear-gradient(135deg,#e8efe4 0%,#f5efe2 100%);
+ 
+    display:flex; align-items:center; justify-content:center;
+ 
+    min-height:100vh; padding:16px; color:var(--text);
+ 
+  }
+ 
+  .phone{
+ 
+    width:100%; max-width:400px; height:min(820px,95vh);
+ 
+    background:var(--bg); border-radius:36px; box-shadow:0 20px 60px rgba(0,0,0,.25);
+ 
+    overflow:hidden; position:relative; display:flex; flex-direction:column;
+ 
+    border:10px solid #1c1c1c;
+ 
+  }
+ 
+  .notch{
+ 
+    position:absolute; top:0; left:50%; transform:translateX(-50%);
+ 
+    width:120px; height:22px; background:#1c1c1c; border-radius:0 0 16px 16px; z-index:10;
+ 
+  }
+ 
+  .header{
+ 
+    background:var(--primary); color:#fff; padding:28px 16px 14px;
+ 
+    display:flex; align-items:center; justify-content:space-between;
+ 
+    font-weight:bold; font-size:16px; flex-shrink:0;
+ 
+  }
+ 
+  .header .back{cursor:pointer; font-size:20px; padding:0 4px; user-select:none;}
+ 
+  .header .title{flex:1; text-align:center;}
+ 
+  .header .spacer{width:24px;}
+ 
+  .content{
+ 
+    flex:1; overflow-y:auto; padding:16px; scroll-behavior:smooth;
+ 
+  }
+ 
+  .content::-webkit-scrollbar{width:6px;}
+ 
+  .content::-webkit-scrollbar-thumb{background:#d0d0d0; border-radius:3px;}
+ 
+  .card{
+ 
+    background:var(--surface); border-radius:var(--radius); padding:16px;
+ 
+    box-shadow:var(--shadow); margin-bottom:14px; border:1px solid #eee;
+ 
+  }
+ 
+  .card h2{margin:0 0 8px; font-size:18px;}
+ 
+  .card p{margin:0 0 8px; line-height:1.9; font-size:14px;}
+ 
+  .btn{
+ 
+    display:block; width:100%; padding:14px; border:none; border-radius:999px;
+ 
+    background:var(--primary); color:#fff; font-family:inherit; font-size:16px;
+ 
+    font-weight:bold; cursor:pointer; transition:background .2s, transform .1s;
+ 
+    margin-top:10px;
+ 
+  }
+ 
+  .btn:active{transform:scale(.98);}
+ 
+  .btn:hover{background:var(--primary-dark);}
+ 
+  .btn.secondary{background:transparent; color:var(--primary); border:2px solid var(--primary);}
+ 
+  .btn:disabled{background:#ccc; cursor:not-allowed;}
+ 
+  .option{
+ 
+    display:flex; align-items:center; gap:10px; padding:14px;
+ 
+    border:1px solid #ddd; border-radius:12px; margin-bottom:8px;
+ 
+    cursor:pointer; transition:all .15s; background:#fff;
+ 
+  }
+ 
+  .option:hover{border-color:var(--primary);}
+ 
+  .option.selected{border:2px solid var(--primary); background:rgba(90,125,79,.08);}
+ 
+  .option .dot{
+ 
+    width:20px; height:20px; border-radius:50%; border:2px solid #bbb;
+ 
+    flex-shrink:0; display:flex; align-items:center; justify-content:center;
+ 
+  }
+ 
+  .option.selected .dot{border-color:var(--primary); background:var(--primary);}
+ 
+  .option.selected .dot::after{content:""; width:8px; height:8px; border-radius:50%; background:#fff;}
+ 
+  .progress{height:8px; background:#e5e5e5; border-radius:999px; overflow:hidden; margin:10px 0;}
+ 
+  .progress > div{height:100%; background:var(--primary); border-radius:999px; transition:width .3s;}
+ 
+  .score-big{font-size:56px; font-weight:800; color:var(--primary); text-align:center; line-height:1;}
+ 
+  .score-label{text-align:center; color:var(--text2); font-size:13px; margin-top:4px;}
+ 
+  .rank-chip{
+ 
+    display:inline-block; padding:6px 14px; border-radius:999px;
+ 
+    background:rgba(90,125,79,.12); color:var(--primary); font-weight:bold; font-size:14px;
+ 
+  }
+ 
+  .bar-row{display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:12px;}
+ 
+  .bar-row .label{width:90px; flex-shrink:0; color:var(--text2);}
+ 
+  .bar-row .bar{flex:1; height:8px; background:#e5e5e5; border-radius:999px; overflow:hidden;}
+ 
+  .bar-row .bar > div{height:100%; background:var(--primary); border-radius:999px;}
+ 
+  .bar-row .val{width:32px; text-align:left; color:var(--text2);}
+ 
+  .badge-item{display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid #f0f0f0;}
+ 
+  .badge-item:last-child{border-bottom:none;}
+ 
+  .badge-emoji{font-size:30px; width:44px; text-align:center;}
+ 
+  .badge-item.locked{opacity:.45;}
+ 
+  .badge-info{flex:1;}
+ 
+  .badge-info .name{font-weight:bold; font-size:15px;}
+ 
+  .badge-info .cond{font-size:12px; color:var(--text2); margin-top:2px;}
+ 
+  .badge-check{color:var(--success); font-size:20px;}
+ 
+  .tabbar{
+ 
+    display:flex; background:#fff; border-top:1px solid #eee; flex-shrink:0;
+ 
+  }
+ 
+  .tabbar .tab{
+ 
+    flex:1; padding:10px 0 8px; text-align:center; font-size:11px;
+ 
+    color:var(--text2); cursor:pointer; user-select:none;
+ 
+  }
+ 
+  .tabbar .tab .ico{font-size:20px; display:block; margin-bottom:2px;}
+ 
+  .tabbar .tab.active{color:var(--primary); font-weight:bold;}
+ 
+  .toast{
+ 
+    position:absolute; bottom:70px; left:50%; transform:translateX(-50%);
+ 
+    background:rgba(46,46,46,.92); color:#fff; padding:10px 20px; border-radius:999px;
+ 
+    font-size:13px; opacity:0; transition:opacity .3s; pointer-events:none; z-index:50;
+ 
+    white-space:nowrap;
+ 
+  }
+ 
+  .toast.show{opacity:1;}
+ 
+  .article-item{padding:14px 0; border-bottom:1px solid #f0f0f0; cursor:pointer;}
+ 
+  .article-item:last-child{border-bottom:none;}
+ 
+  .article-item .title{font-weight:bold; font-size:15px; margin-bottom:4px;}
+ 
+  .article-item .cat{font-size:11px; color:var(--primary); background:rgba(90,125,79,.1); padding:2px 8px; border-radius:999px; display:inline-block;}
+ 
+  .center{text-align:center;}
+ 
+  .mt{margin-top:16px;}
+ 
+  .small{font-size:12px; color:var(--text2);}
+ 
+  .hidden{display:none !important;}
+ 
+  .author-sign{
+ 
+    font-size:12px; color:var(--text2); text-align:center; margin-top:14px;
+ 
+    padding-top:10px; border-top:1px dashed #ddd;
+ 
+  }
+ 
+</style>
+ 
+</head>
+ 
+<body>
+ 
+<div class="phone">
+ 
+  <div class="notch"></div>
+ 
+  <div class="header">
+ 
+    <span class="back" id="backBtn" style="visibility:hidden;">‹</span>
+ 
+    <span class="title" id="headerTitle">گام سبز 🌱</span>
+ 
+    <span class="spacer"></span>
+ 
+  </div>
+ 
+  <div class="content" id="content"></div>
+ 
+  <div class="tabbar" id="tabbar">
+ 
+    <div class="tab active" data-tab="home"><span class="ico">🏠</span>خانه</div>
+ 
+    <div class="tab" data-tab="challenge"><span class="ico">🎯</span>چالش</div>
+ 
+    <div class="tab" data-tab="badges"><span class="ico">🏅</span>نشان‌ها</div>
+ 
+    <div class="tab" data-tab="articles"><span class="ico">📚</span>آموزش</div>
+ 
+    <div class="tab" data-tab="settings"><span class="ico">⚙️</span>تنظیمات</div>
+ 
+  </div>
+ 
+  <div class="toast" id="toast"></div>
+ 
+</div>
+ 
+ 
+<script>
+ 
+/* =========================================================
+ 
+   نام تهیه‌کننده به صورت Base64 — بدون بررسی شرطی
+ 
+   ========================================================= */
+ 
+var AUTHOR_NAME = (function(){
+ 
+  try {
+ 
+    // Base64 از رشته UTF-8 "فرا آزمون فردین"
+ 
+    var b64 = "2YHYsdinINii2LLZhdmI2YYg2YHYsdiv2YrZhiA=";
+ 
+    var raw = atob(b64);
+ 
+    return decodeURIComponent(escape(raw)).trim();
+ 
+  } catch(e) {
+ 
+    return "";
+ 
+  }
+ 
+})();
+ 
+</script>
+ 
+ 
+<script>
+ 
+/* ================= داده‌ها ================= */
+ 
+const DOMAINS = [
+ 
+  { id:"water_energy", title:"آب و انرژی", questions:[
+ 
+    "هنگام مسواک زدن یا شستن ظرف، شیر آب را بسته نگه می‌دارم.",
+ 
+    "از دوش کوتاه (کمتر از ۵ دقیقه) استفاده می‌کنم.",
+ 
+    "لامپ‌های خانه‌ام کم‌مصرف (LED) هستند.",
+ 
+    "وسایل برقی غیرضروری را از پریز می‌کشم.",
+ 
+    "در فصل گرم، دمای کولر را روی ۲۵ درجه یا بالاتر تنظیم می‌کنم."
+ 
+  ]},
+ 
+  { id:"waste_consumption", title:"پسماند و مصرف", questions:[
+ 
+    "کیسه پارچه‌ای یا سبد برای خرید استفاده می‌کنم.",
+ 
+    "زباله‌های خشک (کاغذ، پلاستیک، شیشه) را جدا می‌کنم.",
+ 
+    "از ظروف یک‌بارمصرف تا حد امکان پرهیز می‌کنم.",
+ 
+    "غذای اضافی را دور نمی‌ریزم و برنامه‌ریزی خرید دارم.",
+ 
+    "لباس و وسایل قابل تعمیر را تعمیر می‌کنم یا اهدا می‌کنم."
+ 
+  ]},
+ 
+  { id:"transport_air", title:"حمل‌ونقل و هوا", questions:[
+ 
+    "برای مسافت‌های کوتاه پیاده‌روی یا دوچرخه‌سواری می‌کنم.",
+ 
+    "از حمل‌ونقل عمومی استفاده می‌کنم.",
+ 
+    "خودروی شخصی را برای سفرهای غیرضروری به‌کار نمی‌برم.",
+ 
+    "در روزهای آلودگی هوا، فعالیت‌های بیرونی را کاهش می‌دهم.",
+ 
+    "درخت یا گیاه در خانه/محله می‌کارم و از آن نگهداری می‌کنم."
+ 
+  ]},
+ 
+  { id:"nutrition_health", title:"تغذیه و سلامت", questions:[
+ 
+    "میوه و سبزیجات محلی و فصل را ترجیح می‌دهم.",
+ 
+    "مصرف گوشت را متعادل نگه می‌دارم.",
+ 
+    "آب کافی در طول روز می‌نوشم.",
+ 
+    "غذای خانگی را به غذای آماده ترجیح می‌دهم.",
+ 
+    "دورریز غذا در خانه‌ام کم است."
+ 
+  ]},
+ 
+  { id:"participation_awareness", title:"مشارکت و آگاهی", questions:[
+ 
+    "درباره مسائل زیست‌محیطی محله‌ام اطلاعات دارم.",
+ 
+    "در پاکسازی یا برنامه‌های محلی محیط‌زیستی شرکت می‌کنم.",
+ 
+    "به دیگران (خانواده/دوستان) درباره پایداری توضیح می‌دهم.",
+ 
+    "اخبار و قوانین مرتبط با محیط‌زیست را دنبال می‌کنم.",
+ 
+    "از محصولات و کسب‌وکارهای محلی و پایدار حمایت می‌کنم."
+ 
+  ]}
+ 
+];
+ 
+const OPTIONS = [{v:0,l:"هرگز"},{v:1,l:"گاهی"},{v:2,l:"اغلب"},{v:3,l:"همیشه"}];
+ 
+ 
+const RECOMMENDATIONS = {
+ 
+  water_energy:[
+ 
+    {t:"قانون ۵ دقیقه دوش", d:"امروز دوش را زیر ۵ دقیقه نگه دار. هر دقیقه کمتر، حدود ۱۰ لیتر آب صرفه‌جویی می‌کند."},
+ 
+    {t:"چک‌لیست خاموش کردن وسایل", d:"هر شب قبل از خواب، وسایل برقی غیرضروری را از پریز بکش."}
+ 
+  ],
+ 
+  waste_consumption:[
+ 
+    {t:"تفکیک زباله خشک در سه سبد", d:"یک سبد برای کاغذ، یک سبد برای پلاستیک، یک سبد برای شیشه. همین امشب شروع کن."},
+ 
+    {t:"خرید با کیسه پارچه‌ای", d:"یک کیسه پارچه‌ای در کیف یا ماشین بگذار تا همیشه همراهت باشد."}
+ 
+  ],
+ 
+  transport_air:[
+ 
+    {t:"یک روز در هفته بدون خودرو", d:"یک روز ثابت در هفته را انتخاب کن و با حمل‌ونقل عمومی یا پیاده برو."},
+ 
+    {t:"مسیر پیاده‌روی امن محله", d:"یک مسیر ۱۰ دقیقه‌ای امن پیدا کن و جایگزین یک سفر کوتاه با خودرو کن."}
+ 
+  ],
+ 
+  nutrition_health:[
+ 
+    {t:"برنامه غذایی هفتگی", d:"یک برنامه ساده برای وعده‌های هفته بنویس و بر اساس آن خرید کن."},
+ 
+    {t:"خرید از بازار محلی", d:"این هفته میوه و سبزی را از بازار محلی و فصل تهیه کن."}
+ 
+  ],
+ 
+  participation_awareness:[
+ 
+    {t:"عضویت در گروه محیط‌زیستی محله", d:"در شبکه‌های اجتماعی محلی جستجو کن یا از شورایاری محله بپرس."},
+ 
+    {t:"تماشای یک مستند کوتاه", d:"این هفته یک مستند ۲۰ دقیقه‌ای درباره محیط‌زیست ایران ببین."}
+ 
+  ]
+ 
+};
+ 
+ 
+const CHALLENGES = [
+ 
+  {id:"ch_water_7", title:"چالش ۷ روزه آب", days:7, badge:"badge_water_drop",
+ 
+   actions:["روز ۱: شیر آب را هنگام مسواک ببند.","روز ۲: دوش زیر ۵ دقیقه.","روز ۳: شیر چکه‌کن را بررسی کن.","روز ۴: ظرف‌ها را با آب کم بشوی.","روز ۵: کولر را روی ۲۵ درجه تنظیم کن.","روز ۶: وسایل برقی غیرضروری را از پریز بکش.","روز ۷: یک عادت آب را با خانواده مرور کن."]},
+ 
+  {id:"ch_waste_14", title:"چالش ۱۴ روزه بدون دورریز غذا", days:14, badge:"badge_sofreh",
+ 
+   actions:["هر روز: قبل از خرید، یخچال را بررسی کن.","هر روز: غذای باقی‌مانده را برای فردا برنامه‌ریزی کن.","هر روز: یک وعده با مواد محلی بپز."]}
+ 
+];
+ 
+ 
+const BADGES = [
+ 
+  {id:"badge_water_drop", name:"قطره", emoji:"🌊", cond:"۷ روز متوالی چالش آب"},
+ 
+  {id:"badge_chenar", name:"چنار", emoji:"🌳", cond:"نگهداری گیاه به مدت ۳۰ روز"},
+ 
+  {id:"badge_sofreh", name:"سفره", emoji:"🍲", cond:"۱۴ روز بدون دورریز غذا"},
+ 
+  {id:"badge_bad", name:"باد", emoji:"🚲", cond:"۱۰ سفر با دوچرخه یا پیاده"},
+ 
+  {id:"badge_model", name:"الگوی محله", emoji:"🏅", cond:"امتیاز کل بالای ۷۵"}
+ 
+];
+ 
+ 
+const ARTICLES = [
+ 
+  {title:"💧 کم‌آبی در ایران: چه کاری از دست من برمی‌آید؟", cat:"آب",
+ 
+   body:"ایران در منطقه‌ای خشک و نیمه‌خشک قرار دارد. میانگین بارش سالانه آن حدود ۲۵۰ میلی‌متر است، در حالی که میانگین جهانی حدود ۸۰۰ میلی‌متر است.\n\nسه گام عملی:\n۱. بستن شیر هنگام مسواک: تا ۶ لیتر در دقیقه صرفه‌جویی.\n۲. دوش کوتاه (زیر ۵ دقیقه): تا ۵۰ لیتر در هر نوبت.\n۳. تعمیر شیر چکه‌کن: تا ۲۰ لیتر در روز.\n\nیک گام امروز: شیر آب آشپزخانه را بررسی کنید؛ اگر چکه می‌کند، واشر آن را عوض کنید."},
+ 
+  {title:"♻️ تفکیک زباله از خانه: از کجا شروع کنیم؟", cat:"پسماند",
+ 
+   body:"وقتی زباله خشک و تر مخلوط می‌شوند، بازیافت تقریباً غیرممکن می‌شود و حجم دفن افزایش می‌یابد.\n\nسه سبد ساده:\n- سبد آبی: کاغذ و مقوا\n- سبد زرد: پلاستیک و فلز\n- سبد سبز: شیشه\n\nیک گام امروز: سه سبد یا کیسه رنگی آماده کنید و امشب اولین تفکیک را انجام دهید."},
+ 
+  {title:"🌫️ آلودگی هوا و سلامت: چه کنیم؟", cat:"هوا",
+ 
+   body:"در روزهای سرد سال، بسیاری از شهرهای ایران با پدیده وارونگی دما و افزایش آلاینده‌ها روبه‌رو هستند.\n\nچه کاری از دست ما برمی‌آید؟\n- کاهش سفر با خودروی شخصی\n- استفاده از حمل‌ونقل عمومی\n- ماسک مناسب در روزهای ناسالم\n- کاشت گیاه خانگی\n\nیک گام امروز: مسیر یک سفر کوتاه هفتگی را به پیاده‌روی یا دوچرخه تغییر دهید."},
+ 
+  {title:"⚡ مصرف انرژی در خانه: کجا هدر می‌رود؟", cat:"انرژی",
+ 
+   body:"سه منبع اصلی هدر رفت:\n۱. روشنایی: لامپ‌های رشته‌ای قدیمی تا ۸۰٪ انرژی را به گرما تبدیل می‌کنند.\n۲. سرمایش و گرمایش: تنظیم دمای کولر روی ۱۸ درجه به‌جای ۲۵ درجه، مصرف را تا ۳۰٪ افزایش می‌دهد.\n۳. حالت آماده‌به‌کار: تلویزیون و شارژرها در حالت خاموش هم برق مصرف می‌کنند.\n\nیک گام امروز: امشب قبل از خواب، همه وسایل برقی غیرضروری را از پریز بکشید."},
+ 
+  {title:"🍲 دورریز غذا: سفره‌ای بدون اسراف", cat:"تغذیه",
+ 
+   body:"دورریز غذا نه تنها هدر رفتن پول است، بلکه هدر رفتن آب، زمین و انرژی مصرف‌شده برای تولید آن است.\n\nسه راهکار ساده:\n۱. برنامه‌ریزی خرید: قبل از خرید، یخچال را بررسی کنید.\n۲. برنامه غذایی هفتگی: وعده‌های هفته را بنویسید.\n۳. استفاده از باقی‌مانده: غذای اضافی را برای فردا برنامه‌ریزی کنید.\n\nیک گام امروز: یک برنامه ساده برای وعده‌های این هفته بنویسید."},
+ 
+  {title:"🚲 حمل‌ونقل پایدار: سبک‌تر حرکت کنیم", cat:"حمل‌ونقل",
+ 
+   body:"حمل‌ونقل یکی از اصلی‌ترین منابع آلودگی هوا و انتشار گازهای گلخانه‌ای در شهرهای ایران است.\n\nسه گام عملی:\n۱. مسافت‌های کوتاه: پیاده یا با دوچرخه.\n۲. حمل‌ونقل عمومی: برای مسیرهای ثابت هفتگی.\n۳. هم‌سفر شدن: با همکاران یا همسایگان.\n\nیک گام امروز: یک مسیر ۱۰ دقیقه‌ای امن برای پیاده‌روی پیدا کنید."},
+ 
+  {title:"🤝 مشارکت محلی: از خانه تا محله", cat:"مشارکت",
+ 
+   body:"تغییر پایدار وقتی اتفاق می‌افتد که فردی نباشد؛ جمعی باشد.\n\nسه راه شروع:\n۱. گروه محیط‌زیستی محله: از شورایاری یا شبکه‌های اجتماعی محلی بپرسید.\n۲. پاکسازی محله: در برنامه‌های پاکسازی شرکت کنید.\n۳. آموزش به دیگران: یک نکته محیط‌زیستی را با خانواده در میان بگذارید.\n\nیک گام امروز: در شبکه‌های اجتماعی محلی جستجو کنید و به یک گروه محیط‌زیستی بپیوندید."},
+ 
+  {title:"🌿 گیاهان خانگی: نفس تازه در خانه", cat:"گیاهان",
+ 
+   body:"گیاهان خانگی کیفیت هوای داخل را بهبود می‌دهند، رطوبت را متعادل می‌کنند و به سلامت روان کمک می‌کنند.\n\nسه گیاه مناسب ایران:\n۱. سانسوریا: کم‌آب‌بر، مناسب نور کم.\n۲. پوتوس: رشد سریع، تصفیه هوا.\n۳. شمعدانی: مناسب بالکن و نور زیاد.\n\nیک گام امروز: یک گیاه کوچک انتخاب کنید و برنامه آبیاری آن را در تقویم گوشی ثبت کنید."}
+ 
+];
+ 
+ 
+/* ================= ابزار ================= */
+ 
+const $ = id => document.getElementById(id);
+ 
+const faNum = n => String(n).replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]);
+ 
+const content = $("content");
+ 
+const headerTitle = $("headerTitle");
+ 
+const backBtn = $("backBtn");
+ 
+let toastTimer;
+ 
+function toast(msg){
+ 
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+ 
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove("show"), 2000);
+ 
+}
+ 
+ 
+/* ================= وضعیت ================= */
+ 
+const STORAGE_KEY = "gam_sabz_state_v1";
+ 
+let state = loadState();
+ 
+function defaultState(){
+ 
+  return { answers:{}, result:null, challenge:null, badges:[], lastArticle:null };
+ 
+}
+ 
+function loadState(){
+ 
+  try{
+ 
+    const raw = localStorage.getItem(STORAGE_KEY);
+ 
+    return raw ? Object.assign(defaultState(), JSON.parse(raw)) : defaultState();
+ 
+  }catch(e){ return defaultState(); }
+ 
+}
+ 
+function saveState(){
+ 
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+ 
+}
+ 
+ 
+/* ================= ناوبری ================= */
+ 
+let currentTab = "home";
+ 
+let navStack = [];
+ 
+function setHeader(title, showBack){
+ 
+  headerTitle.textContent = title;
+ 
+  backBtn.style.visibility = showBack ? "visible" : "hidden";
+ 
+}
+ 
+backBtn.onclick = () => {
+ 
+  if(navStack.length){ const prev = navStack.pop(); render(prev, false); }
+ 
+};
+ 
+function go(screen){ navStack.push(currentTab); render(screen, true); }
+ 
+ 
+document.querySelectorAll(".tab").forEach(tab => {
+ 
+  tab.onclick = () => {
+ 
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+ 
+    tab.classList.add("active");
+ 
+    currentTab = tab.dataset.tab;
+ 
+    navStack = [];
+ 
+    render(currentTab, false);
+ 
+  };
+ 
+});
+ 
+ 
+/* ================= رندر ================= */
+ 
+function render(screen, push){
+ 
+  content.scrollTop = 0;
+ 
+  if(screen === "home") renderHome();
+ 
+  else if(screen === "assessment") renderAssessment();
+ 
+  else if(screen === "result") renderResult();
+ 
+  else if(screen === "challenge") renderChallenge();
+ 
+  else if(screen === "badges") renderBadges();
+ 
+  else if(screen === "articles") renderArticles();
+ 
+  else if(screen === "settings") renderSettings();
+ 
+  else if(screen.startsWith("article:")) renderArticle(parseInt(screen.split(":")[1]));
+ 
+}
+ 
+ 
+/* ---------- خوش‌آمد ---------- */
+ 
+function renderWelcome(){
+ 
+  setHeader("گام سبز 🌱", false);
+ 
+  content.innerHTML = `
+ 
+    <div class="center" style="padding-top:20px;">
+ 
+      <div style="font-size:64px;">🌱</div>
+ 
+      <h2 style="margin:12px 0 6px;">به گام سبز خوش آمدید</h2>
+ 
+      <p class="small">پایداری از خانه شروع می‌شود. در چند دقیقه عادت‌های روزمره‌تان را بررسی می‌کنیم و گام‌های کوچک اما مؤثری پیشنهاد می‌دهیم.</p>
+ 
+    </div>
+ 
+    <div class="card mt">
+ 
+      <p>۱. ۲۵ سوال کوتاه پاسخ می‌دهید.</p>
+ 
+      <p>۲. امتیاز پایداری خود را می‌بینید.</p>
+ 
+      <p>۳. توصیه‌های عملی و چالش‌های روزانه دریافت می‌کنید.</p>
+ 
+    </div>
+ 
+    <button class="btn" onclick="startAssessment()">شروع خودارزیابی ▶</button>
+ 
+    <p class="small center mt">پاسخ‌ها فقط روی همین دستگاه ذخیره می‌شوند.</p>
+ 
+    <div class="author-sign">تهیه‌کننده: ${AUTHOR_NAME || "—"}</div>
+ 
+  `;
+ 
+}
+ 
+ 
+/* ---------- خانه ---------- */
+ 
+function renderHome(){
+ 
+  setHeader("گام سبز 🌱", false);
+ 
+  const r = state.result;
+ 
+  if(!r){
+ 
+    content.innerHTML = `
+ 
+      <div class="card center">
+ 
+        <div style="font-size:56px;">🌱</div>
+ 
+        <h2>هنوز خودارزیابی نکرده‌اید</h2>
+ 
+        <p class="small">با یک خودارزیابی کوتاه، امتیاز پایداری خود را ببینید و گام‌های بعدی را دریافت کنید.</p>
+ 
+        <button class="btn" onclick="startAssessment()">شروع خودارزیابی</button>
+ 
+      </div>
+ 
+    `;
+ 
+    return;
+ 
+  }
+ 
+  const ch = state.challenge;
+ 
+  let chHtml = "";
+ 
+  if(ch){
+ 
+    const c = CHALLENGES.find(x=>x.id===ch.id);
+ 
+    const nextDay = Math.min(ch.checked.length+1, c.days);
+ 
+    const action = c.actions[Math.min(nextDay-1, c.actions.length-1)];
+ 
+    chHtml = `
+ 
+      <div class="card">
+ 
+        <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text2);">
+ 
+          <span>چالش امروز</span><span>روز ${faNum(nextDay)} از ${faNum(c.days)}</span>
+ 
+        </div>
+ 
+        <h2 style="margin:6px 0;">${c.title}</h2>
+ 
+        <p class="small">${action}</p>
+ 
+        <p class="small">🔥 ${faNum(ch.checked.length)} روز متوالی</p>
+ 
+        <button class="btn secondary" onclick="go('challenge')">مشاهده چالش</button>
+ 
+      </div>
+ 
+    `;
+ 
+  } else {
+ 
+    chHtml = `
+ 
+      <div class="card">
+ 
+        <h2>چالش امروز</h2>
+ 
+        <p class="small">هنوز چالشی شروع نکرده‌اید.</p>
+ 
+        <button class="btn secondary" onclick="go('challenge')">شروع چالش</button>
+ 
+      </div>
+ 
+    `;
+ 
+  }
+ 
+  const earned = state.badges;
+ 
+  const badgesHtml = earned.length ? `
+ 
+    <div class="card">
+ 
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+ 
+        <h2>نشان‌های شما</h2>
+ 
+        <span style="color:var(--primary); cursor:pointer; font-size:13px;" onclick="go('badges')">همه</span>
+ 
+      </div>
+ 
+      <div>${earned.map(id=>{const b=BADGES.find(x=>x.id===id); return b?`<span style="display:inline-block; background:rgba(201,166,107,.15); padding:6px 12px; border-radius:999px; margin:4px; font-size:13px;">${b.emoji} ${b.name}</span>`:"";}).join("")}</div>
+ 
+    </div>` : "";
+ 
+  content.innerHTML = `
+ 
+    <div class="card center">
+ 
+      <p class="small">امتیاز پایداری شما</p>
+ 
+      <div class="score-big">${faNum(r.total)}</div>
+ 
+      <p class="score-label">از ۱۰۰</p>
+ 
+      <span class="rank-chip">${r.rank} 🌿</span>
+ 
+    </div>
+ 
+    ${chHtml}
+ 
+    ${badgesHtml}
+ 
+    <button class="btn" onclick="startAssessment()">شروع خودارزیابی مجدد</button>
+ 
+  `;
+ 
+}
+ 
+ 
+/* ---------- خودارزیابی ---------- */
+ 
+let assessIndex = 0;
+ 
+let assessAnswers = {};
+ 
+function startAssessment(){
+ 
+  assessIndex = 0; assessAnswers = {};
+ 
+  go("assessment");
+ 
+}
+ 
+function flatQuestions(){
+ 
+  const list = [];
+ 
+  DOMAINS.forEach(d => d.questions.forEach((q,i) => list.push({domain:d, qIndex:i, text:q})));
+ 
+  return list;
+ 
+}
+ 
+function renderAssessment(){
+ 
+  setHeader("خودارزیابی", true);
+ 
+  const flat = flatQuestions();
+ 
+  const total = flat.length;
+ 
+  const cur = flat[assessIndex];
+ 
+  const progress = Math.round((Object.keys(assessAnswers).length/total)*100);
+ 
+  const selected = assessAnswers[cur.domain.id+"_"+cur.qIndex];
+ 
+  content.innerHTML = `
+ 
+    <div class="progress"><div style="width:${progress}%"></div></div>
+ 
+    <p class="small">${faNum(assessIndex+1)} از ${faNum(total)} — حوزه: ${cur.domain.title}</p>
+ 
+    <div class="card">
+ 
+      <h2 style="font-size:16px; line-height:1.7;">${cur.text}</h2>
+ 
+      ${OPTIONS.map(o=>`
+ 
+        <div class="option ${selected===o.v?"selected":""}" onclick="pickAnswer(${o.v})">
+ 
+          <div class="dot"></div><span>${o.l}</span>
+ 
+        </div>
+ 
+      `).join("")}
+ 
+    </div>
+ 
+    <button class="btn" id="nextBtn" ${selected===undefined?"disabled":""} onclick="nextQuestion()">
+ 
+      ${assessIndex===total-1?"مشاهده نتیجه":"بعدی ▶"}
+ 
+    </button>
+ 
+  `;
+ 
+}
+ 
+function pickAnswer(v){
+ 
+  const flat = flatQuestions();
+ 
+  const cur = flat[assessIndex];
+ 
+  assessAnswers[cur.domain.id+"_"+cur.qIndex] = v;
+ 
+  renderAssessment();
+ 
+}
+ 
+function nextQuestion(){
+ 
+  const flat = flatQuestions();
+ 
+  if(assessIndex < flat.length-1){ assessIndex++; renderAssessment(); }
+ 
+  else { computeResult(); go("result"); }
+ 
+}
+ 
+ 
+/* ---------- محاسبه نتیجه ---------- */
+ 
+function computeResult(){
+ 
+  const domainScores = {};
+ 
+  DOMAINS.forEach(d=>{
+ 
+    let sum = 0;
+ 
+    d.questions.forEach((_,i)=>{
+ 
+      sum += assessAnswers[d.id+"_"+i] || 0;
+ 
+    });
+ 
+    domainScores[d.id] = Math.round((sum/(d.questions.length*3))*100);
+ 
+  });
+ 
+  const total = Math.round(Object.values(domainScores).reduce((a,b)=>a+b,0)/DOMAINS.length);
+ 
+  let rank = "مبتدی";
+ 
+  if(total>25) rank="در حال رشد";
+ 
+  if(total>50) rank="پایدار";
+ 
+  if(total>75) rank="الگو";
+ 
+  state.answers = assessAnswers;
+ 
+  state.result = {total, rank, domainScores};
+ 
+  if(total>75 && !state.badges.includes("badge_model")) state.badges.push("badge_model");
+ 
+  saveState();
+ 
+}
+ 
+ 
+/* ---------- نتیجه ---------- */
+ 
+function renderResult(){
+ 
+  setHeader("نتیجه خودارزیابی", true);
+ 
+  const r = state.result;
+ 
+  if(!r){ content.innerHTML = "<p>نتیجه‌ای موجود نیست.</p>"; return; }
+ 
+  const weak = DOMAINS.filter(d => r.domainScores[d.id] < 50);
+ 
+  let recHtml = "";
+ 
+  if(weak.length){
+ 
+    recHtml = `<h2 style="margin:16px 0 8px;">توصیه‌های این هفته</h2>`;
+ 
+    weak.forEach(d=>{
+ 
+      const recs = RECOMMENDATIONS[d.id] || [];
+ 
+      recs.slice(0,2).forEach(rec=>{
+ 
+        recHtml += `<div class="card"><h2 style="font-size:15px;">${rec.t}</h2><p class="small">${rec.d}</p></div>`;
+ 
+      });
+ 
+    });
+ 
+  }
+ 
+  content.innerHTML = `
+ 
+    <div class="card center">
+ 
+      <p class="small">امتیاز پایداری شما</p>
+ 
+      <div class="score-big">${faNum(r.total)}</div>
+ 
+      <p class="score-label">از ۱۰۰</p>
+ 
+      <span class="rank-chip">${r.rank} 🌿</span>
+ 
+    </div>
+ 
+    <div class="card">
+ 
+      <h2>نمودار حوزه‌ها</h2>
+ 
+      ${DOMAINS.map(d=>`
+ 
+        <div class="bar-row">
+ 
+          <span class="label">${d.title}</span>
+ 
+          <div class="bar"><div style="width:${r.domainScores[d.id]}%"></div></div>
+ 
+          <span class="val">${faNum(r.domainScores[d.id])}</span>
+ 
+        </div>
+ 
+      `).join("")}
+ 
+    </div>
+ 
+    ${recHtml}
+ 
+    <button class="btn" onclick="go('home')">بازگشت به خانه</button>
+ 
+    <button class="btn secondary" onclick="startAssessment()">شروع خودارزیابی مجدد</button>
+ 
+  `;
+ 
+}
+ 
+ 
+/* ---------- چالش ---------- */
+ 
+function renderChallenge(){
+ 
+  setHeader("چالش‌ها", true);
+ 
+  if(!state.challenge){
+ 
+    content.innerHTML = `
+ 
+      <p class="small">یک چالش انتخاب کنید و هر روز یک اقدام کوچک انجام دهید.</p>
+ 
+      ${CHALLENGES.map(c=>`
+ 
+        <div class="card">
+ 
+          <h2>${c.title}</h2>
+ 
+          <p class="small">${faNum(c.days)} روز — نشان: ${BADGES.find(b=>b.id===c.badge)?.emoji || ""} ${BADGES.find(b=>b.id===c.badge)?.name || ""}</p>
+ 
+          <button class="btn" onclick="startChallenge('${c.id}')">شروع چالش</button>
+ 
+        </div>
+ 
+      `).join("")}
+ 
+    `;
+ 
+    return;
+ 
+  }
+ 
+  const ch = state.challenge;
+ 
+  const c = CHALLENGES.find(x=>x.id===ch.id);
+ 
+  const nextDay = Math.min(ch.checked.length+1, c.days);
+ 
+  const action = c.actions[Math.min(nextDay-1, c.actions.length-1)];
+ 
+  const done = ch.checked.includes(nextDay);
+ 
+  const completed = ch.checked.length >= c.days;
+ 
+  content.innerHTML = `
+ 
+    <div class="progress"><div style="width:${Math.round(ch.checked.length/c.days*100)}%"></div></div>
+ 
+    <p class="small">روز ${faNum(nextDay)} از ${faNum(c.days)}</p>
+ 
+    <div class="card">
+ 
+      <h2>${c.title}</h2>
+ 
+      <p style="line-height:1.9;">${action}</p>
+ 
+    </div>
+ 
+    ${done
+ 
+      ? `<div class="card center" style="background:rgba(76,175,80,.08);"><p>✅ این اقدام را انجام دادید.</p></div>`
+ 
+      : `<button class="btn" onclick="checkIn()">انجام دادم ☐</button>`}
+ 
+    <p class="small mt">🔥 زنجیره: ${faNum(ch.checked.length)} روز</p>
+ 
+    ${completed ? `<div class="card center" style="background:rgba(76,175,80,.12);"><p>🎉 تبریک! چالش را کامل کردید.</p></div>` : ""}
+ 
+    <button class="btn secondary mt" onclick="resetChallenge()">پایان چالش</button>
+ 
+  `;
+ 
+}
+ 
+function startChallenge(id){
+ 
+  state.challenge = {id, checked:[]};
+ 
+  saveState();
+ 
+  toast("چالش شروع شد 🌱");
+ 
+  renderChallenge();
+ 
+}
+ 
+function checkIn(){
+ 
+  const ch = state.challenge;
+ 
+  const c = CHALLENGES.find(x=>x.id===ch.id);
+ 
+  const nextDay = Math.min(ch.checked.length+1, c.days);
+ 
+  if(!ch.checked.includes(nextDay)) ch.checked.push(nextDay);
+ 
+  if(ch.checked.length >= c.days && !state.badges.includes(c.badge)){
+ 
+    state.badges.push(c.badge);
+ 
+    toast("نشان جدید کسب شد! 🏅");
+ 
+  }
+ 
+  saveState();
+ 
+  renderChallenge();
+ 
+}
+ 
+function resetChallenge(){
+ 
+  state.challenge = null;
+ 
+  saveState();
+ 
+  renderChallenge();
+ 
+}
+ 
+ 
+/* ---------- نشان‌ها ---------- */
+ 
+function renderBadges(){
+ 
+  setHeader("نشان‌های من", true);
+ 
+  content.innerHTML = `
+ 
+    <div class="card">
+ 
+      ${BADGES.map(b=>{
+ 
+        const earned = state.badges.includes(b.id);
+ 
+        return `<div class="badge-item ${earned?"":"locked"}">
+ 
+          <div class="badge-emoji">${b.emoji}</div>
+ 
+          <div class="badge-info">
+ 
+            <div class="name">${b.name}</div>
+ 
+            <div class="cond">${b.cond}</div>
+ 
+          </div>
+ 
+          ${earned?'<span class="badge-check">✅</span>':'<span style="color:var(--locked);">🔒</span>'}
+ 
+        </div>`;
+ 
+      }).join("")}
+ 
+    </div>
+ 
+  `;
+ 
+}
+ 
+ 
+/* ---------- آموزش ---------- */
+ 
+function renderArticles(){
+ 
+  setHeader("آموزش", true);
+ 
+  content.innerHTML = `
+ 
+    <div class="card">
+ 
+      ${ARTICLES.map((a,i)=>`
+ 
+        <div class="article-item" onclick="openArticle(${i})">
+ 
+          <div class="title">${a.title}</div>
+ 
+          <span class="cat">${a.cat}</span>
+ 
+        </div>
+ 
+      `).join("")}
+ 
+    </div>
+ 
+  `;
+ 
+}
+ 
+function openArticle(i){
+ 
+  navStack.push("articles");
+ 
+  render("article:"+i, true);
+ 
+}
+ 
+function renderArticle(i){
+ 
+  const a = ARTICLES[i];
+ 
+  setHeader("مقاله", true);
+ 
+  content.innerHTML = `
+ 
+    <h2 style="margin-bottom:8px;">${a.title}</h2>
+ 
+    <span class="cat">${a.cat}</span>
+ 
+    <div class="card mt">
+ 
+      <p style="line-height:2;">${a.body.replace(/\n/g,"<br>")}</p>
+ 
+    </div>
+ 
+    <button class="btn secondary" onclick="go('articles')">بازگشت به لیست</button>
+ 
+  `;
+ 
+}
+ 
+ 
+/* ---------- تنظیمات ---------- */
+ 
+function renderSettings(){
+ 
+  setHeader("تنظیمات", true);
+ 
+  content.innerHTML = `
+ 
+    <div class="card">
+ 
+      <h2>حریم خصوصی</h2>
+ 
+      <p class="small">همه پاسخ‌ها و امتیازها فقط روی همین دستگاه ذخیره می‌شوند. هیچ داده‌ای به سرور ارسال نمی‌شود.</p>
+ 
+    </div>
+ 
+    <button class="btn" style="background:var(--error);" onclick="clearAll()">پاک کردن همه داده‌ها</button>
+ 
+    <div class="card mt">
+ 
+      <h2>درباره برنامه</h2>
+ 
+      <p class="small">گام سبز — خودارزیابی پایداری</p>
+ 
+      <p class="small">نسخه ۱.۰.۰ — نسخه سبک وب</p>
+ 
+      <p style="margin-top:10px; font-weight:bold; color:var(--primary);">
+ 
+        تهیه‌کننده: ${AUTHOR_NAME || "—"}
+ 
+      </p>
+ 
+      <p class="small" style="margin-top:6px;">
+ 
+        © ${new Date().getFullYear()} — تمامی حقوق محفوظ است.
+ 
+      </p>
+ 
+    </div>
+ 
+  `;
+ 
+}
+ 
+function clearAll(){
+ 
+  if(!confirm("همه داده‌ها پاک شوند؟")) return;
+ 
+  state = defaultState();
+ 
+  saveState();
+ 
+  toast("همه داده‌ها پاک شد");
+ 
+  go("home");
+ 
+}
+ 
+ 
+/* ================= شروع ================= */
+ 
+if(!state.result && !state.challenge && !state.badges.length){
+ 
+  renderWelcome();
+ 
+} else {
+ 
+  render("home", false);
+ 
+}
+ 
+</script>
+ 
+</body>
+ 
+</html>
